@@ -67,12 +67,13 @@ fi
 
 get_file_size $INFILE
 INFILESIZE=$CURFILESIZE
+INFILESIZEPRT=$(printf "%'d" $INFILESIZE)
 get_file_duration $INFILESIZE
 INFILEDURATION=$FILEDURATION
 echo
 echo "Source file:"
 echo "  Name:     $INFILE"
-echo "  Size:     $INFILESIZE"
+echo "  Size:     $INFILESIZEPRT bytes"
 echo "  Duration: $INFILEDURATION"
 echo -n "  MD5:      "
 INMD5=($(md5sum $INFILE))
@@ -88,9 +89,9 @@ echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
 
 get_file_size $FLACFILE
 FLACFILESIZE=$CURFILESIZE
-FLACPCT=$(echo "scale=2; $FLACFILESIZE / $INFILESIZE * 100" | bc)
 FLACFILESIZEPRT=$(printf "%'d" $FLACFILESIZE)
-echo "  Size:     $FLACFILESIZEPRT ($FLACPCT% of source file size)"
+FLACPCT=$(echo "scale=2; $FLACFILESIZE / $INFILESIZE * 100" | bc)
+echo "  Size:     $FLACFILESIZEPRT bytes ($FLACPCT% of source file size)"
 
 echo
 echo "Decompressing from $FLACFILE..."
@@ -102,12 +103,13 @@ echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
 
 get_file_size $OUTFILE
 OUTFILESIZE=$CURFILESIZE
+OUTFILESIZEPRT=$(printf "%'d" $OUTFILESIZE)
 get_file_duration $OUTFILESIZE
 OUTFILEDURATION=$FILEDURATION
 echo
 echo "Destination file:"
 echo "  Name:     $OUTFILE"
-echo "  Size:     $OUTFILESIZE"
+echo "  Size:     $OUTFILESIZEPRT bytes"
 echo "  Duration: $INFILEDURATION"
 echo -n "  MD5:      "
 OUTMD5=($(md5sum $OUTFILE))
