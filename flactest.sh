@@ -56,11 +56,11 @@ INFILE=$1
 FLACFILE=${INFILE%.*}.raw.flac
 OUTFILE=${INFILE%.*}.copy.lds
 
-if [ $2 == "-o" ] ; then  # overwrite files
-	if [ -e $FLACFILE ] ; then
+if [[ ($# -eq 2 && $2 == "-o" ) ]] ; then  # overwrite files
+	if [[ -e $FLACFILE ]] ; then
 		rm $FLACFILE
 	fi
-	if [ -e $OUTFILE ] ; then
+	if [[ -e $OUTFILE ]] ; then
 		rm $OUTFILE
 	fi
 fi
@@ -83,19 +83,22 @@ echo "Compressing to $FLACFILE..."
 start_timer
 dddconv --unpack -i $INFILE | flac -s --sample-rate=48000 --sign=signed --channels=1 --endian=little --bps=16 --compression-level-8 - --output-name=$FLACFILE
 end_timer
-echo "  finished in $TIMERDURATION"
+FLACSPEED=$(echo "scale=2; $FILETIME / $INTERVAL" | bc | xargs printf "%.2f")
+echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
 
 get_file_size $FLACFILE
 FLACFILESIZE=$CURFILESIZE
 FLACPCT=$(echo "scale=2; $FLACFILESIZE / $INFILESIZE * 100" | bc)
-echo "  Size:      $FLACFILESIZE ($FLACPCT% of source file size)"
+FLACFILESIZEPRT=$(printf "%'d" $FLACFILESIZE)
+echo "  Size:     $FLACFILESIZEPRT ($FLACPCT% of source file size)"
 
 echo
 echo "Decompressing from $FLACFILE..."
 start_timer
 flac -d -s $FLACFILE --force-raw-format --endian=little --sign=signed --output-name=- | dddconv --pack -o $OUTFILE
 end_timer
-echo "  finished in $TIMERDURATION"
+FLACSPEED=$(echo "scale=2; $FILETIME / $INTERVAL" | bc | xargs printf "%.2f")
+echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
 
 get_file_size $OUTFILE
 OUTFILESIZE=$CURFILESIZE
@@ -111,7 +114,7 @@ OUTMD5=($(md5sum $OUTFILE))
 echo $OUTMD5
 
 echo
-if [ $OUTMD5 == $INMD5 ] ; then
+if [[ $OUTMD5 == $INMD5 ]] ; then
    echo "Test succeeded; source and destination files match"
 else 
    echo "Test failed; source and destination files do NOT match"
