@@ -82,7 +82,7 @@ echo
 
 echo "Compressing to $FLACFILE..."
 start_timer
-dddconv --unpack -i $INFILE | flac -s --sample-rate=48000 --sign=signed --channels=1 --endian=little --bps=16 --compression-level-8 - --output-name=$FLACFILE
+dddconv --unpack -i $INFILE | /Users/warren/src/flac/src/flac/flac -s --sample-rate=48000 --sign=signed --channels=1 --endian=little --bps=16 --compression-level-8 - --output-name=$FLACFILE
 end_timer
 FLACSPEED=$(echo "scale=2; $FILETIME / $INTERVAL" | bc | xargs printf "%.2f")
 echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
@@ -96,9 +96,9 @@ echo "  Size:     $FLACFILESIZEPRT bytes ($FLACPCT% of source file size)"
 echo
 echo "Decompressing from $FLACFILE..."
 start_timer
-flac -d -s $FLACFILE --force-raw-format --endian=little --sign=signed --output-name=- | dddconv --pack -o $OUTFILE
+/Users/warren/src/flac/src/flac/flac -d -s $FLACFILE --force-raw-format --endian=little --sign=signed --output-name=- | dddconv --pack -o $OUTFILE
 end_timer
-FLACSPEED=$(echo "scale=2; $INTERVAL / $FILETIME" | bc | xargs printf "%.2f")
+FLACSPEED=$(echo "scale=2; $FILETIME / $INTERVAL" | bc | xargs printf "%.2f")
 echo "  finished in $TIMERDURATION (${FLACSPEED}x realtime)"
 
 get_file_size $OUTFILE
